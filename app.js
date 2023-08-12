@@ -5,7 +5,7 @@ const {ObjectId} = require('mongodb');
 //inti app & middleware
 const app = express();
 
-
+app.use(express.json()) //this is baiscally passses the any josn comming from the rrequest so that we can use inside the hanlder function
 //db connection
 //the call back function expects that if connection is succefully we want to listen to express app other wise we will thorugh error
 //if error is null then it seems like the conncetion is successfully then we can listen to the port 3000 .we need to check the condition
@@ -45,4 +45,14 @@ app.get('/books/:id',async(request,response)=>{
    
     const book = await db.collection('books').findOne({_id:id});
     return response.json(book);
+})
+
+app.post('/book',async(request,response)=>{
+
+    const book = request.body;
+
+    const res = await db.collection('books').insertOne(book)
+    if(res){
+        return response.status(200).json({message:"success"})
+    }
 })
