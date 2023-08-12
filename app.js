@@ -34,7 +34,7 @@ await db.collection('books').find().sort({author:1}).forEach(book => {
     return response.json({books})
 })
 
-
+//retriving
 app.get('/books/:id',async(request,response)=>{
     //we need to use ObjectId to convert the request.paramas.id which is in string into ID
    //the id should be 12 characters and 24 hexa charcters
@@ -47,6 +47,7 @@ app.get('/books/:id',async(request,response)=>{
     return response.json(book);
 })
 
+//Adding
 app.post('/book',async(request,response)=>{
 
     const book = request.body;
@@ -55,4 +56,43 @@ app.post('/book',async(request,response)=>{
     if(res){
         return response.status(200).json({message:"success"})
     }
+})
+
+//deleting
+app.delete('/books/:id',async(request,response)=>{
+
+    if(!ObjectId.isValid(request.params.id)){
+        return response.json({message:"invalid ID"});
+    }
+    const id = new ObjectId(request.params.id);
+
+    const res = await db.collection('books').deleteOne({_id:id});
+    if(!res){
+        return response.json({message:"Delete unsuccesfully"});
+    }
+    else{
+        return response.status(200).json({message:"successfull deleted"});
+    }
+})
+
+//patch is used to update individual fileds in a doucment
+
+app.patch('/books/:id',async(request,response)=>{
+    
+    //we can also ge the update object from postman and can access using request.body
+    
+    if(!ObjectId.isValid(request.params.id)){
+        return response.json({message:"Invalid ID"});
+    }
+    const id = new ObjectId(request.params.id);
+
+    const res=await db.collection('books').updateOne({_id:id},{$set : {author:"saimallik",pages:550,rating:9}}); //{$set: updates}
+   console.log(res)
+    if(res.modifedCount==0){
+    return response.json({message:"unable to update document"});
+  }
+  else{
+    return response.json({message:"Document updated succesfully"})
+  }
+
 })
