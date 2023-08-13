@@ -26,9 +26,13 @@ connectToDb((err)=>{
 
 app.get('/books',async (request,response)=>{ 
     let books=[];
+    //implemeting pagination using query paramter
+    const page = request.query.p; //as p is given as query pamater in front end API
+    const bookperpage=2;
+
 //find or sort return cursor ponting to a set of documents if we want to access the document weneed to iterate using forEach or toArray methods
 //for reach is aysysnchrones to it takes some time to fetch becuase it is fetching like batches so we can use "then" method or we can use await and asysnc to get data     
-await db.collection('books').find().sort({author:1}).forEach(book => {
+await db.collection('books').find().sort({author:1}).skip(page*bookperpage).limit(bookperpage).forEach(book => {
         books.push(book);
     });
     return response.json({books})
